@@ -1,2 +1,2 @@
 # Bamazon
-Week 12 - Homework: Make a Language Interpretation and Recognition Interface (LIRI) using command line node linking to three APIs 
+Week 12 - Homework: An Amazon-like storefront using MySQL database. Functionality includes taking orders, restocking inventory and basic reporting.
