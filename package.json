@@ -1,0 +1,23 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "amazon store emulation with customer buying, manager updating inventory and supervisor running reports",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janjakubowski/Bamazon.git"
+  },
+  "author": "Jan Jakubowski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/janjakubowski/Bamazon/issues"
+  },
+  "homepage": "https://github.com/janjakubowski/Bamazon#readme",
+  "dependencies": {
+    "inquirer": "^6.3.1",
+    "mysql": "^2.17.1"
+  }
+}
