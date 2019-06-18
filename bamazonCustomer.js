@@ -101,26 +101,24 @@ function displayInventory (rows) {
 
 function selectItem(shelf) {
 
-inquirer
-	.prompt({
-		name: "item",
-		type: "list",
-		message: "Would you like to purchase?",
-		choices: shelf
-	})
-	.then(function(answer) {
-        // based on their answer, either call the bid or the post functions
-        if (answer.item === "Cancel") {
-          console.log("Purchase Cancelled");
-          main();
-        } else {
-            // var item = answer.item;
-			// console.log(item);
-			getQuantity(answer.item);
-		}
-            
-	});
-
+	inquirer
+		.prompt({
+			name: "item",
+			type: "list",
+			message: "Would you like to purchase?",
+			choices: shelf
+		})
+		.then(function(answer) {
+			// based on their answer, either call the bid or the post functions
+			if (answer.item === "Cancel") {
+				console.log("Purchase Cancelled");
+				main();
+			} else {
+				// var item = answer.item;
+				// console.log(item);
+				getQuantity(answer.item);
+			}
+		});	
 }
 
 function getQuantity(item) {
@@ -160,7 +158,22 @@ function getQuantity(item) {
 }
 
 function updateInventory(prodID, qtySold) {
-	console.log("we sold " + qtySold + " of " + prodID);
+	sql = "SELECT quantity_in_stock, quantity_sold FROM products WHERE upc = '" + prodID + "'";
+	connection.query(sql, function(err, row) {
+		if (err) throw err;
+		var inStock = row[0].quantity_in_stock - qtySold;
+		var sold = row[0].quantity_sold + qtySold;
+		connection.query("UPDATE products SET ? WHERE upc = '" + prodID + "'",
+		[
+		  {
+			quantity_in_stock: inStock,
+			quantity_sold: sold
+		  }
+		],
+		function(error) {
+		  if (error) throw err;
+		});
+	});
 }
 		
 
