@@ -1,8 +1,9 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+const { table } = require("table");
 
 // create the connection information for the sql database
-var connection = mysql.createConnection({
+var db = mysql.createConnection({
 	host: "localhost",
 	port: 3306,
 
@@ -13,7 +14,7 @@ var connection = mysql.createConnection({
 });
 
 // connect to the mysql server and sql database
-connection.connect(function(err) {
+db.connect(function(err) {
 	if (err) throw err;
 	// run the start function after the connection is made to prompt the user
 	console.log("connection made");
@@ -39,8 +40,8 @@ inquirer
 		switch (answer.action) {
 
 			case "View Products for Sale":
-				console.log("A");
-				main();
+				display();
+				// main();
 				break;
 					
 			case "View Low Inventory":
@@ -60,12 +61,52 @@ inquirer
 
 			case "Quit":
 				console.log("See Ya Later Alligator");
-				connection.end();
+				db.end();
 				break;
-
-			default:
-				console.log("Something's Wrong!!!")
-				connection.end();
 		}
 	});
+}
+
+function display() {
+
+	// shop variables 
+	
+
+	// What do we have to sell and how much does it cost?
+	var sql = "SELECT upc, product_name AS name, price, quantity_in_stock AS qty FROM products";
+	db.query(sql, function(error, rows) {
+		if (error) throw err;
+
+		displayInventory(rows);
+
+		
+		
+	});
+
+        
+            
+        } 
+    //   });
+
+        
+	//   };
+	  
+function displayInventory (rows) {
+	// var shelf = [];
+	var output = [];
+	var line = ["UPC", "Product", "Price (USD)", "Quantity"];
+	output.push(line);
+
+	for (var i = 0; i < rows.length; i++) {
+		line = [];
+		line.push(rows[i].upc, rows[i].name, rows[i].price, rows[i].qty);
+		output.push(line);
+		// shelf.push(rows[i].name);
+	}
+
+	// shelf.push("Cancel");
+	console.log(table(output));
+
+	main();
+
 }
