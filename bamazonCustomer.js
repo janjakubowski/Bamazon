@@ -18,13 +18,13 @@ connection.connect(function(err) {
   if (err) throw err;
   // run the start function after the connection is made to prompt the user
   console.log("connection made");
-  var data = [
-    ['0A', '0B', '0C'],
-    ['1A', '1B', '1C'],
-    ['2A', '2B', '2C']
-];
-var output = table(data);
-console.log(output);
+//   var data = [
+//     ['0A', '0B', '0C'],
+//     ['1A', '1B', '1C'],
+//     ['2A', '2B', '2C']
+// ];
+// var output = table(data);
+// console.log(output);
 //   console.table([{ a: 1, b: 'Y' }, { a: 'Z', b: 2 }]);
   main();
 });
@@ -56,49 +56,114 @@ function main() {
   }
 
   function shop() {
-		// What do we have to sell and how much does it cost?
-		var sql = "SELECT product_name as name, product_description as descript, price FROM products";
-        connection.query(sql, function(err, res) {
-        if (err) throw err;
-        var shelf = [];
-        var data = [];
-        var line = ["Product", "Description", "Price (USD)"];
-        data.push(line);
-        for (var i = 0; i < res.length; i++) {
-            line = [];
-        //   console.log("Product: " + res[i].name + " : " + res[i].descript + " || $: " + res[i].price);
-          line.push(res[i].name, res[i].descript, res[i].price);
-            data.push(line);
-          shelf.push(res[i].name);
 
-        }
+	// shop variables 
+	
+
+	// What do we have to sell and how much does it cost?
+	var sql = "SELECT product_name as name, price FROM products";
+	connection.query(sql, function(error, rows) {
+		if (error) throw err;
+
+		displayInventory(rows);
+
+		
+		
+	});
+
         
-        shelf.push("Quit");
-        console.log(table(data));
-
-        inquirer
-            .prompt({
-                name: "item",
-                type: "list",
-                message: "Would you like to purchase?",
-                choices: shelf
-            })
-      .then(function(answer) {
-        // based on their answer, either call the bid or the post functions
-        if (answer.action === "Quit") {
-          console.log("Show ME the MONEY!");
-          return;
-        } else {
-            // answer.item
-            console.log(answer.item)
-            main();
+            
         } 
-      });
+    //   });
 
         
-      });
+	//   };
+	  
+function displayInventory (rows) {
+	var shelf = [];
+	var output = [];
+	var line = ["Product", "Price (USD)"];
+	output.push(line);
+
+	for (var i = 0; i < rows.length; i++) {
+		line = [];
+		line.push(rows[i].name, rows[i].price);
+		output.push(line);
+		shelf.push(rows[i].name);
+	}
+
+	shelf.push("Cancel");
+	console.log(table(output));
+
+	selectItem(shelf);
+
+}
+
+function selectItem(shelf) {
+
+inquirer
+	.prompt({
+		name: "item",
+		type: "list",
+		message: "Would you like to purchase?",
+		choices: shelf
+	})
+	.then(function(answer) {
+        // based on their answer, either call the bid or the post functions
+        if (answer.item === "Cancel") {
+          console.log("Purchase Cancelled");
+          main();
+        } else {
+            // var item = answer.item;
+			// console.log(item);
+			getQuantity(answer.item);
+		}
+            
+	});
+
+}
+
+function getQuantity(item) {
+	sql = "SELECT price, quantity_in_stock, upc FROM products WHERE product_name = '" + item + "'";
+		connection.query(sql, function(err, row) {
+			if (err) throw err;
+			var price = row[0].price;
+			var qty = row[0].quantity_in_stock;
+			var prodID = row[0].upc;
+			if (qty === 0) {
+				console.log("\nSorry, we are out of " + item + "\n");
+				shop();
+			} else {
+			inquirer
+            .prompt({
+                name: "desiredQty",
+                type: "number",
+                message: "How many " + item + "would you like to purchase?",
+                // choices: shelf
+            })
+            .then(function(answer) {
+				// console.log(answer.desiredQty);
+				if (answer.desiredQty > qty) {
+					console.log("\nSorry, we only have " + qty + " of " + item + "\n");
+					shop(); 
+				} else {
+					var amount = price * answer.desiredQty;
+					console.log("\n\nTHANK YOU for your purchase. The amount due is $" + amount.toFixed(2));
+					updateInventory(prodID, answer.desiredQty);
+					main();
+				}
+			});
+		}
+	
+			
+		})
+}
+
+function updateInventory(prodID, qtySold) {
+	console.log("we sold " + qtySold + " of " + prodID);
+}
 		
 
 	
 
-  }
+  
