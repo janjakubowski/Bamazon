@@ -68,7 +68,9 @@ Create another Node app called `bamazonSupervisor.js`. Running this application 
 
 1. MySQL Database is called `bamazon_DB`.
 
-2. A Table inside of that database called `products`. `products` should have each of the following columns:
+2. Created user `bamazon` who has read  and write to the data but not the schema. 
+
+3. A Table inside of that database called `products`. `products` should have each of the following columns:
 
     * item_id (unique id for each product)
     * product_name (Name of product)
