@@ -55,7 +55,7 @@ function shop() {
 
 function displayInventory (rows) {
 
-	var shelf = [];
+	var items = [];
 	var output = [];
 	var line = ["Product", "Price (USD)"];
 	output.push(line);
@@ -64,23 +64,24 @@ function displayInventory (rows) {
 		line = [];
 		line.push(rows[i].name, rows[i].price);
 		output.push(line);
-		shelf.push(rows[i].name);
+		items.push(rows[i].name);
 	}
 
 	console.log(table(output));
+
+	selectItem(items);
 	
-	selectItem(shelf);
 }
 
-function selectItem(shelf) {
+function selectItem(items) {
 	
-	shelf.push("Cancel"); // add the option to cancel
+	items.push("Cancel"); // add the option to cancel
 	inquirer
 		.prompt({
 			name: "item",
 			type: "list",
 			message: "Would you like to purchase?",
-			choices: shelf
+			choices: items
 		})
 		.then(function(answer) {
 			// based on their answer, either call the bid or the post functions

@@ -51,9 +51,11 @@ var connection = mysql.createConnection({
           connection.end();
           break;
 
-        default:
-          console.log("Something's Wrong!!!")
-          connection.end();
       }
     });
 }
+
+function salesByDept () {
+	var sql = "SELECT p.upc AS upc, p.product_name AS name, p."
+
+};
